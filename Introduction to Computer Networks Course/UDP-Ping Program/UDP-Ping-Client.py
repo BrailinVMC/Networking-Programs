@@ -367,6 +367,9 @@ while currentPing <= maxPings:
         # Indicate ping message number, ott and rtt.
         print ('Pinging Message ' + str(currentPing )+ ': OTT: ' + str(ott) + 'secs and RTT: ' + str(rtt) + 'secs'); sleep(wait)
 
+        # Reset ott and rtt.
+        ott = 0; rtt = 0
+        
         # Update the currentPing count.
         currentPing += 1
 
@@ -391,6 +394,7 @@ if currentPing >= maxPings:
     print ('Packets: \n\tSent = ' + str(maxPings) + '\n\tReceived = ' + str(serviced) + '\n\tLost = ' + str(dropped)
                + '\n\tLost (%) = ' + str((100 * float(dropped)/maxPings)) + '%\n')
     print ('Max OTT: ' + str(maxTT[0]) + '\nMin OTT: ' + str(minTT[0]) + '\nMax RTT: ' + str(maxTT[1])
-                + '\nMin RTT: ' + str(minTT[1]) + '\n')
+                + '\nMin RTT: ' + str(minTT[1]) + '\nAverage OTT: ' + str((float(avgTT[0])/maxPings))
+                + '\nAverage RTT: ' + str(float(avgTT[1])/maxPings))
     
 client.close()
