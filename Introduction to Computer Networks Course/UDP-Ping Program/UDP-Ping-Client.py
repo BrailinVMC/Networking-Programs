@@ -295,6 +295,21 @@ maxPings = 10
 # Create variable to track pings.
 currentPing = 1
 
+# Create variable to track pings requests serviced.
+serviced = 0
+
+# Create variable to track pings requests dropped.
+dropped = 0
+
+# Create variable to track min ott and rtt.
+minTT = [1000000, 1000000]
+
+# Create variable to track max ott and rtt.
+maxTT = [0, 0]
+
+# Create variable to calculate average ott and rtt.
+avgTT = [0, 0]
+
 # Loop for pinging to server a certain amount of times.
 while currentPing <= maxPings:
     # Create variable to store time when packet is sent.
@@ -320,6 +335,9 @@ while currentPing <= maxPings:
         # Record time stamp in seconds.
         receivedTime = time()
 
+        # Update number of pings serviced.
+        serviced += 1
+        
         # Unpack client's sequence number and time packet was received by server -- 4-byte + 8-byte.
         pingSeqNum, serverReceiveTime = struct.unpack('id', serverResp)[0:2]
         
@@ -329,6 +347,23 @@ while currentPing <= maxPings:
         # Calculate RTT.
         rtt = ott + (receivedTime - serverReceiveTime)
 
+        # Update maxTTs.
+        if maxTT[0] < ott:
+            maxTT[0] = ott
+        if maxTT[1] < rtt:
+            maxTT[1] = rtt
+
+        # Update minTTs.
+        if minTT[0] > ott:
+            minTT[0] = ott
+        if minTT[1] > rtt:
+            minTT[1] = rtt
+
+        # Update avgTT.
+        avgTT[0] += ott
+        avgTT[1] += rtt
+        
+        # Update minTTs.
         # Indicate ping message number, ott and rtt.
         print ('Pinging Message ' + str(currentPing )+ ': OTT: ' + str(ott) + 'secs and RTT: ' + str(rtt) + 'secs'); sleep(wait)
 
@@ -343,7 +378,19 @@ while currentPing <= maxPings:
 
         # Update the currentPing count.
         currentPing += 1
+
+        # Update number of pings serviced.
+        dropped += 1
         
         continue
+
+# Check if all pings were sent and print statistics.
+if currentPing >= maxPings:
+    # Print statistics:
+    print ('\nPing statistics for : ' + server_ip + ':')
+    print ('Packets: \n\tSent = ' + str(maxPings) + '\n\tReceived = ' + str(serviced) + '\n\tLost = ' + str(dropped)
+               + '\n\tLost (%) = ' + str((100 * float(dropped)/maxPings)) + '%\n')
+    print ('Max OTT: ' + str(maxTT[0]) + '\nMin OTT: ' + str(minTT[0]) + '\nMax RTT: ' + str(maxTT[1])
+                + '\nMin RTT: ' + str(minTT[1]) + '\n')
     
 client.close()
