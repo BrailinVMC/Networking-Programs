@@ -71,7 +71,7 @@ while True:
     print ('Waiting for request...\n')
 
     # Receive request from clients.
-    (clientRequest, (clientAddr, clientPort)) = server.recvfrom(8000)
+    clientRequest, (clientAddr, clientPort) = server.recvfrom(8000)
 
     # Decode request.
     clientRequest = clientRequest.decode()
